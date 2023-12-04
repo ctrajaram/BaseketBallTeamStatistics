@@ -1,6 +1,5 @@
 from constants import TEAMS, PLAYERS
 from copy import deepcopy
-from pprint import pprint
 import sys
 
 
@@ -45,8 +44,6 @@ def print_stats(dct, k) -> None:
     dct (dict): The dictionary containing team statistics.
     k (str): The key representing the team in the dictionary.
     """
-    print('printing dict')
-    pprint(dct)
     print('-' * 30)
     print(f"Team {k} Stats")
     print('-' * 30)
@@ -57,12 +54,12 @@ def print_stats(dct, k) -> None:
     print("Players on Team: ")
     for item in dct[k]:
         print(item['name'], end=", " if dct[k].index(item) != 5 else "")
-    print("\naGuardians: ")
+    print("\nGuardians: ")
     lst_guardians = []
     for item in dct[k]:
         lst_guardians.extend(item['guardians'])
     for item in lst_guardians:
-        print(item, end=", " if lst_guardians.index(item) != 5 else "")
+        print(item,  end=", " if lst_guardians.index(item) != len(lst_guardians) - 1 else "")
     print("\n")
 
 
