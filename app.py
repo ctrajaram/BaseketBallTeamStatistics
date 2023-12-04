@@ -1,5 +1,6 @@
 from constants import TEAMS, PLAYERS
 from copy import deepcopy
+from pprint import pprint
 import sys
 
 
@@ -44,13 +45,24 @@ def print_stats(dct, k):
     dct (dict): The dictionary containing team statistics.
     k (str): The key representing the team in the dictionary.
     """
+    print('printing dict')
+    pprint(dct)
     print('-' * 30)
     print(f"Team {k} Stats")
     print('-' * 30)
     print(f"Total Players: {len(dct[k])}")
-    print('Players on Team')
+    print(f"Total experienced: {len([item for item in dct[k] if item.get('experience')])}")
+    print(f"Total inexperienced: {len([item for item in dct[k] if not item.get('experience')])}")
+    print(f"Average Height: {sum([item['height'] for item in dct[k] ]) / len(dct[k])}")
+    print("Players on Team: ")
     for item in dct[k]:
         print(item['name'], end=", " if dct[k].index(item) != 5 else "")
+    print("\naGuardians: ")
+    lst_guardians = []
+    for item in dct[k]:
+        lst_guardians.extend(item['guardians'])
+    for item in lst_guardians:
+        print(item, end=", " if lst_guardians.index(item) != 5 else "")
     print("\n")
 
 
@@ -106,7 +118,7 @@ def clean_data(players_lst: list) -> list:
 
 def balance_teams(teams_copy, cleaned_list) -> dict:
     """
-    Balances the players across teams.
+    Balances the players across teams with equal no of experience and inexperienced players.
 
     Args:
     teams_copy (list): A list of team names.
@@ -116,14 +128,24 @@ def balance_teams(teams_copy, cleaned_list) -> dict:
     dict: A dictionary mapping each team to its players.
     """
     no_of_players_per_team = int(len(cleaned_list) / len(teams_copy))
+    no_of_players_per_team_halved = int(no_of_players_per_team // 2)
     teams_copy_local = deepcopy(teams_copy)
     cleaned_list_copy = deepcopy(cleaned_list)
+    unique_keys = set()
+    for d in cleaned_list_copy:
+        unique_keys.update(d.keys())
+    desired_keys = list(unique_keys)
+    experienced_list = [{k: d[k] for k in desired_keys} for d in cleaned_list_copy if d.get("experience")]
+    inexperienced_list = [{k: d[k] for k in desired_keys} for d in cleaned_list_copy if not d.get("experience")]
     dct = {}
     for t in teams_copy_local:
         # Assigning players to each team
-        dct[t] = cleaned_list_copy[:no_of_players_per_team]
+        # dct[t] = cleaned_list_copy[:no_of_players_per_team]
+
+        dct[t] = experienced_list[:no_of_players_per_team_halved] + inexperienced_list[:no_of_players_per_team_halved]
         # Removing assigned players
-        del (cleaned_list_copy[:no_of_players_per_team])
+        del (experienced_list[:no_of_players_per_team_halved])
+        del (inexperienced_list[:no_of_players_per_team_halved])
     return dct
 
 
