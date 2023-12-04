@@ -12,7 +12,7 @@ def main() -> None:
     start_stats(balance_teams(TEAMS, clean_data(PLAYERS)))
 
 
-def quit_stats():
+def quit_stats() -> None:
     """
     Prints a goodbye message and exits the program.
     """
@@ -20,7 +20,7 @@ def quit_stats():
     sys.exit(0)
 
 
-def start_stats(dct: dict):
+def start_stats(dct: dict) -> None:
     """
     Handles the initial user input for displaying team stats or quitting the program.
 
@@ -36,7 +36,7 @@ def start_stats(dct: dict):
         display_stats(dct)
 
 
-def print_stats(dct, k):
+def print_stats(dct, k) -> None:
     """
     Prints the statistics of a specific team.
 
@@ -48,13 +48,22 @@ def print_stats(dct, k):
     print(f"Team {k} Stats")
     print('-' * 30)
     print(f"Total Players: {len(dct[k])}")
-    print('Players on Team')
+    print(f"Total experienced: {len([item for item in dct[k] if item.get('experience')])}")
+    print(f"Total inexperienced: {len([item for item in dct[k] if not item.get('experience')])}")
+    print(f"Average Height: {sum([item['height'] for item in dct[k] ]) / len(dct[k])}")
+    print("Players on Team: ")
     for item in dct[k]:
         print(item['name'], end=", " if dct[k].index(item) != 5 else "")
+    print("\nGuardians: ")
+    lst_guardians = []
+    for item in dct[k]:
+        lst_guardians.extend(item['guardians'])
+    for item in lst_guardians:
+        print(item,  end=", " if lst_guardians.index(item) != len(lst_guardians) - 1 else "")
     print("\n")
 
 
-def display_stats(dct: dict):
+def display_stats(dct: dict) -> None:
     """
     Handles user input for selecting a specific team to display stats for.
 
@@ -106,7 +115,7 @@ def clean_data(players_lst: list) -> list:
 
 def balance_teams(teams_copy, cleaned_list) -> dict:
     """
-    Balances the players across teams.
+    Balances the players across teams with equal no of experience and inexperienced players.
 
     Args:
     teams_copy (list): A list of team names.
@@ -116,14 +125,24 @@ def balance_teams(teams_copy, cleaned_list) -> dict:
     dict: A dictionary mapping each team to its players.
     """
     no_of_players_per_team = int(len(cleaned_list) / len(teams_copy))
+    no_of_players_per_team_halved = int(no_of_players_per_team // 2)
     teams_copy_local = deepcopy(teams_copy)
     cleaned_list_copy = deepcopy(cleaned_list)
+    unique_keys = set()
+    for d in cleaned_list_copy:
+        unique_keys.update(d.keys())
+    desired_keys = list(unique_keys)
+    experienced_list = [{k: d[k] for k in desired_keys} for d in cleaned_list_copy if d.get("experience")]
+    inexperienced_list = [{k: d[k] for k in desired_keys} for d in cleaned_list_copy if not d.get("experience")]
     dct = {}
     for t in teams_copy_local:
         # Assigning players to each team
-        dct[t] = cleaned_list_copy[:no_of_players_per_team]
+        # dct[t] = cleaned_list_copy[:no_of_players_per_team]
+
+        dct[t] = experienced_list[:no_of_players_per_team_halved] + inexperienced_list[:no_of_players_per_team_halved]
         # Removing assigned players
-        del (cleaned_list_copy[:no_of_players_per_team])
+        del (experienced_list[:no_of_players_per_team_halved])
+        del (inexperienced_list[:no_of_players_per_team_halved])
     return dct
 
 
