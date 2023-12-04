@@ -13,7 +13,7 @@ def main() -> None:
     start_stats(balance_teams(TEAMS, clean_data(PLAYERS)))
 
 
-def quit_stats():
+def quit_stats() -> None:
     """
     Prints a goodbye message and exits the program.
     """
@@ -21,7 +21,7 @@ def quit_stats():
     sys.exit(0)
 
 
-def start_stats(dct: dict):
+def start_stats(dct: dict) -> None:
     """
     Handles the initial user input for displaying team stats or quitting the program.
 
@@ -37,7 +37,7 @@ def start_stats(dct: dict):
         display_stats(dct)
 
 
-def print_stats(dct, k):
+def print_stats(dct, k) -> None:
     """
     Prints the statistics of a specific team.
 
@@ -66,7 +66,7 @@ def print_stats(dct, k):
     print("\n")
 
 
-def display_stats(dct: dict):
+def display_stats(dct: dict) -> None:
     """
     Handles user input for selecting a specific team to display stats for.
 
